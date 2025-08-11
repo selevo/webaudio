@@ -1,4 +1,7 @@
 /*
+
+Этот файл  взял  из espruino 
+Он передает данные на устройство  через UART  использую выход аудио смартфона.
  * This file is part of Espruino, a JavaScript interpreter for Microcontrollers
  *
  * Copyright (C) 2013 Gordon Williams <gw@pur3.co.uk>
@@ -12,9 +15,19 @@ var AudioContext = window.AudioContext || window.webkitAudioContext;
 var context = new AudioContext();
 
 // some devices output an inverted waveform, some don't
+// Некоторые устройства выводят перевернытый сигнал, некоторые нет, 
+//установим по умолчанию  неперевернутый сигнал
 var audio_serial_invert = false;
 
-/** Send the given string of data out over audio. 
+/**
+Отправьте данную строку данных перед аудиопотоком.
+Добавляет 1 -секундную преамбулу/почту, чтобы дать
+Конденсаторное время для зарядки (поэтому мы получаем полные качели на 2 В
+на выводе.
+Если отправляете символы за пределами диапазона 0-255,
+Они будут интерпретированы как перерыв (так что не передаются).
+----------------------------------------------------------------------------------
+Send the given string of data out over audio. 
 
     This adds a 1 second preamble/postable to give the 
     capacitor time to charge (so we get a full 2V swing 
@@ -23,6 +36,10 @@ var audio_serial_invert = false;
    If you send characters outside the range 0-255,
    they will be interpreted as a break (so not transmitted).
 */
+/*
+функция ниже передает данные  и  что-то возвращает в переменной data, callback - непонятно пока что
+
+ */
 function audio_serial_write(data, callback) {
   var sampleRate = 44100;
   var header = sampleRate; // 1 sec to charge/discharge the cap
