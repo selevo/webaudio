@@ -45,8 +45,20 @@ function audio_serial_write(data, callback)
       var sampleRate = 44100;
       var header = sampleRate; // 1 sec to charge/discharge the cap
       var baud = 9600;
-      var samplesPerByte = parseInt(sampleRate*11/baud);
+      
+        /*  Следующая строка -  расчет сколько делать семплов(кусочков звука) на  1 байт данных
+         1 байт  данный в  UART  это 10 бит: 1 бита старт,  8 бит  данные и 1 бит стоповый
+         для чего делить на 11 -непонял, возможно заголовок звуковой "для разряда конденастора" хаха
+         Возможно используется 9ти битный формат данных с проверкой четности.
+         */
+      var samplesPerByte = parseInt(sampleRate*11/baud); 
+         
+        /*
+                Сейчас   посчитается  обзая длина  звукового буфера
+             */
       var bufferSize = samplesPerByte*data.length/*samples*/ + header*2;
+
+        //Создание   буфера
       var buffer = context.createBuffer(1, bufferSize, sampleRate);
       var b = buffer.getChannelData(0);
 
@@ -78,7 +90,7 @@ function audio_serial_write(data, callback)
       for (var i=0;i<header;i++) b[offset+i]=1-(i / header);
 
       if (audio_serial_invert)
-        for (var i=0;i<bufferSize;i++) b[i] = 1-b[i];
+        for (var i=0;i<bufferSize;i++) b[i] = 1-b[i];// интересное решение -инвертировние вычитанием из единицы!
 
       var source = context.createBufferSource();
       source.buffer = buffer;
