@@ -95,8 +95,8 @@ function audio_serial_write(data, callback)
       var source = context.createBufferSource();
       source.buffer = buffer;
       source.connect(context.destination);
-      source.start();
+      source.start(); // Запуск аудиопередачи
 
-      if (callback)
+      if (callback)  // Здесь какая-то обратная связь, запускает callback через  время = 1000*bufferSize/sampleRate
         window.setTimeout(callback, 1000*bufferSize/sampleRate);
 }
